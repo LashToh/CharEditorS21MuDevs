@@ -23,7 +23,8 @@ public sealed class ItemEditForm : Form
     private readonly NumericUpDown _anc = Num(0, 255);
     private readonly CheckBox _o380 = new() { Text = "Opción 380", AutoSize = true };
     private readonly NumericUpDown _harm = Num(0, 255);
-    private readonly TextBox[] _sock = new TextBox[5];
+    private readonly Label _harmLabel = new() { Text = "Harmony", AutoSize = true, Padding = new Padding(8, 4, 0, 0) };
+    private readonly SocketEditor _sockEd;
     private readonly NumericUpDown _serial = new() { Minimum = 0, Maximum = uint.MaxValue, Width = 120 };
     private readonly TextBox _hex = new() { Width = 600, Font = new Font("Consolas", 9f) };
 
@@ -36,21 +37,23 @@ public sealed class ItemEditForm : Form
         _db = db;
         _images = images;
         _item = existing ?? MuItem.Create(0, 0);
+        _sockEd = new SocketEditor(db.Sockets, 470);
         Text = existing is null ? "Agregar item" : "Editar item";
         StartPosition = FormStartPosition.CenterParent;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = MinimizeBox = false;
-        ClientSize = new Size(900, 580);
+        ClientSize = new Size(900, 780);
         Font = new Font("Segoe UI", 9f);
 
         foreach (var (cat, name) in db.Sections.Where(s => s.Key <= 15).OrderBy(s => s.Key))
             _cat.Items.Add(new CatItem(cat, name));
         for (var i = 0; i <= 7; i++) _opt.Items.Add($"+{i * 4}");
 
-        var left = new FlowLayoutPanel { FlowDirection = FlowDirection.TopDown, Location = new Point(10, 10), Size = new Size(270, 500), WrapContents = false };
+        _list.Height = 580;
+        var left = new FlowLayoutPanel { FlowDirection = FlowDirection.TopDown, Location = new Point(10, 10), Size = new Size(270, 680), WrapContents = false };
         left.Controls.AddRange([new Label { Text = "Categoría", AutoSize = true }, _cat, _filter, _list]);
 
-        var right = new TableLayoutPanel { Location = new Point(295, 10), Size = new Size(595, 480), ColumnCount = 2, AutoSize = false };
+        var right = new TableLayoutPanel { Location = new Point(295, 10), Size = new Size(595, 690), ColumnCount = 2, AutoSize = false };
         right.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110));
         right.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
 
@@ -75,25 +78,17 @@ public sealed class ItemEditForm : Form
         }
         Row(right, "Excelente", excBox);
         Row(right, "Ancient / Set", Flow(_anc, new Label { Text = "5/6 = set A/B +5 · 9/10 = set A/B +10", AutoSize = true, ForeColor = Color.Gray, Padding = new Padding(4, 4, 0, 0) }));
-        Row(right, "Otras", Flow(_o380, new Label { Text = "Harmony", AutoSize = true, Padding = new Padding(8, 4, 0, 0) }, _harm));
-
-        var sockBox = new FlowLayoutPanel { AutoSize = true };
-        for (var i = 0; i < 5; i++)
-        {
-            _sock[i] = new TextBox { Width = 36, MaxLength = 2, CharacterCasing = CharacterCasing.Upper, TextAlign = HorizontalAlignment.Center };
-            sockBox.Controls.Add(_sock[i]);
-        }
-        sockBox.Controls.Add(new Label { Text = "hex · FF = sin socket · FE = vacío", AutoSize = true, ForeColor = Color.Gray, Padding = new Padding(4, 4, 0, 0) });
-        Row(right, "Sockets", sockBox);
+        Row(right, "Otras", Flow(_o380, _harmLabel, _harm));
+        Row(right, "Sockets", _sockEd);
         Row(right, "Serial", _serial);
 
-        var hexLabel = new Label { Text = "Hex (25 bytes):", AutoSize = true, Location = new Point(295, 508) };
-        _hex.Location = new Point(395, 505);
+        var hexLabel = new Label { Text = "Hex (25 bytes):", AutoSize = true, Location = new Point(295, 711) };
+        _hex.Location = new Point(395, 708);
         _hex.Width = 400;
-        var applyHex = new Button { Text = "Aplicar hex", Location = new Point(800, 503), Width = 90 };
+        var applyHex = new Button { Text = "Aplicar hex", Location = new Point(800, 706), Width = 90 };
 
-        var ok = new Button { Text = "Aceptar", DialogResult = DialogResult.OK, Location = new Point(700, 540), Width = 90 };
-        var cancel = new Button { Text = "Cancelar", DialogResult = DialogResult.Cancel, Location = new Point(800, 540), Width = 90 };
+        var ok = new Button { Text = "Aceptar", DialogResult = DialogResult.OK, Location = new Point(700, 742), Width = 90 };
+        var cancel = new Button { Text = "Cancelar", DialogResult = DialogResult.Cancel, Location = new Point(800, 742), Width = 90 };
         AcceptButton = ok;
         CancelButton = cancel;
 
@@ -113,7 +108,7 @@ public sealed class ItemEditForm : Form
         foreach (var c in new[] { _skill, _luck, _o380 }.Concat(_exc))
             c.CheckedChanged += (_, _) => FromControls();
         _opt.SelectedIndexChanged += (_, _) => FromControls();
-        foreach (var s in _sock) s.TextChanged += (_, _) => FromControls();
+        _sockEd.Changed += (_, _) => FromControls();
 
         ok.Click += (_, _) =>
         {
@@ -208,7 +203,10 @@ public sealed class ItemEditForm : Form
         _anc.Value = _item.Ancient;
         _o380.Checked = _item.Opt380;
         _harm.Value = _item.Harmony;
-        for (var i = 0; i < 5; i++) _sock[i].Text = _item.GetSocket(i).ToString("X2");
+        var socketItem = _db.Sockets.IsSocketItem(_item.Cat, _item.Index);
+        _harm.Enabled = !socketItem;
+        _harmLabel.Text = socketItem ? "Harmony (usado por el bonus socket)" : "Harmony";
+        _sockEd.LoadFrom(_item);
         _serial.Value = _item.Serial;
         _hex.Text = _item.Hex;
         _loading = false;
@@ -227,10 +225,8 @@ public sealed class ItemEditForm : Form
         _item.Exc = exc;
         _item.Ancient = (int)_anc.Value;
         _item.Opt380 = _o380.Checked;
-        _item.Harmony = (int)_harm.Value;
-        for (var i = 0; i < 5; i++)
-            if (byte.TryParse(_sock[i].Text, System.Globalization.NumberStyles.HexNumber, null, out var b))
-                _item.SetSocket(i, b);
+        if (!_db.Sockets.IsSocketItem(_item.Cat, _item.Index)) _item.Harmony = (int)_harm.Value;
+        _sockEd.ApplyTo(_item);
         _item.Serial = (uint)_serial.Value;
         _hex.Text = _item.Hex;
     }

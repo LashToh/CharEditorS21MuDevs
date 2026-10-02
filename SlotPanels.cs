@@ -1,4 +1,4 @@
-﻿namespace MuBredaEditor;
+namespace MuBredaEditor;
 
 public sealed class SlotEventArgs(int slot, bool empty, Point screen) : EventArgs
 {

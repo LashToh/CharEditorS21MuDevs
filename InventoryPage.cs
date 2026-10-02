@@ -120,7 +120,7 @@ public sealed class InventoryPage : UserControl
         var it = slot >= 0 ? Box?.Get(slot) : null;
         _details.Text = it is null
             ? (slot >= 0 ? $"Casillero {slot} vacío." : "")
-            : $"Casillero {slot}\r\n\r\n" + it.Describe(_db.Get(it.Cat, it.Index)).Replace("\n", "\r\n").Replace("\r\r", "\r");
+            : $"Casillero {slot}\r\n\r\n" + it.Describe(_db.Get(it.Cat, it.Index), _db.Sockets).Replace("\n", "\r\n").Replace("\r\r", "\r");
     }
 
     private InvArea? AreaOf(int slot) => _areas.FirstOrDefault(a => a.Contains(slot));

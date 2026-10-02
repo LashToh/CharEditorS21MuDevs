@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+//==============================================================================================================================================//
+//	MuDevs.com
+//	Version: S19.2-3
+//	Update: Oct/13/2024
+//	Editor: OMEGA
+//==============================================================================================================================================//
+//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+//	Infos:
+//	Fire, Lightning, and Ice Seeds may only be inserted into weapons.
+//	Wind, Water, and Earth Seeds may only be inserted into armors.
+//
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+//~~ Modification of the file requires changes on Game Client side in \Data\Local\Eng\socketitem.bmd
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+//
+//	### <SocketItemOptionSettings> ### 
+//
+//	Index: Index of Seed option
+//
+//	Element: 
+//		1 ~ Fire
+//		2 ~ Water
+//		3 ~ Ice
+//		4 ~ Wind
+//		5 ~ Light
+//		6 ~ Earth
+//
+//	Level: Level on an option, 0-5
+//
+//	Rate: Probability chance to get desired option calculated from sum of PoolValue of all seeds (higher value more chance to add the option)
+//
+//	BonusValue1~20: Value of Bonus at option level 1~20
+//
+//	Name: Name of an option, used for logging and in-file description purpose
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+//	### <SocketBonusSettings> ###
+//	Index:
+//	SubIndex: ElementType 0~5
+//	MinItemSection: Minimum Item Type (Category) of items the bonus option can be applied to, 0-11, MinItemSection should be lower or equal to MaxItemSection
+//	MaxItemSection:  Maximum Item Type (Category) of items the bonus option can be applied to, 0-11, MaxItemSection should be higher or equal to MinItemSection
+//	BonusValue: Value of bonus option
+//	BonusRate: Chance Rate to get specified option, n/100
+//	ReqOptionType1: Type of element, 1-6
+//	ReqOptionType2: Type of element, 1-6
+//	ReqOptionType3: Type of element, 1-6
+//	ReqOptionType4: Type of element, 1-6
+//	ReqOptionType5: Type of element, 1-6
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+//		1 ~ Fire
+//		2 ~ Water
+//		3 ~ Ice
+//		4 ~ Wind
+//		5 ~ Light
+//		6 ~ Earth
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+//	Name: Name of Bonus option used for logging and in-file description purpose
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+//	### <SpecialOptionSettings> ###
+//	Index: Index of bonus option
+//	Value: Value of Bonus option
+//	ReqOptionTypeCount1: Minimum count of active Seed of specified type to activate specified option
+//	ReqOptionTypeCount2: Minimum count of active Seed of specified type to activate specified option
+//	ReqOptionTypeCount3: Minimum count of active Seed of specified type to activate specified option
+//	ReqOptionTypeCount4: Minimum count of active Seed of specified type to activate specified option
+//	ReqOptionTypeCount5: Minimum count of active Seed of specified type to activate specified option
+//	ReqOptionTypeCount6: Minimum count of active Seed of specified type to activate specified option
+//	Name: Name of Bonus option used for logging and in-file description purpose
+//
+-->
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<SocketItemOption>
+	<SocketItemOptionSettings> <!-- Old Index 0 -->
+		<!--    Index  	     Type      SubIndex  BonusType 	   Rate      Value1       Value2       Value3       Value4   	   Value5       Value6       Value7       Value8       Value9       Value10       Value11       Value12       Value13	     Value14        Value15  	   Value16  	  Value17  	     Value18 		Value19   	   Value20		  Opt Name                     -->
+		<!-- Fire -->
+		<Option Index="0"  Element="1" Level="0" Rate="30" Value1="11"  Value2="12"  Value3="13"  Value4="14"  Value5="15"  Value6="16"  Value7="17"  Value8="18"  Value9="19"  Value10="20"  Value11="22"  Value12="24"  Value13="27"   Value14="30"   Value15="33"   Value16="37"   Value17="41"   Value18="45"   Value19="50"   Value20="60"   Name="Increases DMG and Wizardry DMG for every 20 levels" />
+		<Option Index="1"  Element="1" Level="1" Rate="20" Value1="7"	  Value2="8"   Value3="9"	Value4="10"  Value5="11"  Value6="12"  Value7="13"  Value8="14"  Value9="15"  Value10="16"  Value11="17"  Value12="18"  Value13="19"   Value14="20"   Value15="21"   Value16="22"   Value17="23"   Value18="24"   Value19="25"   Value20="26"   Name="Attack speed increase" />
+		<Option Index="2"  Element="1" Level="2" Rate="30" Value1="30"  Value2="32"  Value3="35"  Value4="40"  Value5="45"  Value6="50"  Value7="55"  Value8="61"  Value9="67"  Value10="73"  Value11="83"  Value12="93"  Value13="103"  Value14="113"  Value15="123"  Value16="136"  Value17="149"  Value18="162"  Value19="175"  Value20="188"  Name="Maximum attack/Wizardry increase" />
+		<Option Index="3"  Element="1" Level="3" Rate="40" Value1="20"  Value2="22"  Value3="25"  Value4="30"  Value5="35"  Value6="40"  Value7="45"  Value8="51"  Value9="57"  Value10="63"  Value11="73"  Value12="83"  Value13="93"   Value14="103"  Value15="113"  Value16="126"  Value17="139"  Value18="152"  Value19="165"  Value20="178"  Name="Minimum attack/Wizardry increase" />
+		<Option Index="4"  Element="1" Level="4" Rate="20" Value1="20"  Value2="22"  Value3="25"  Value4="30"  Value5="35"  Value6="40"  Value7="45"  Value8="51"  Value9="57"  Value10="63"  Value11="73"  Value12="83"  Value13="93"   Value14="103"  Value15="113"  Value16="126"  Value17="139"  Value18="152"  Value19="165"  Value20="178"  Name="Attack/Wizardry increase" />
+		<Option Index="5"  Element="1" Level="5" Rate="30" Value1="40"  Value2="41"  Value3="42"  Value4="43"  Value5="44"  Value6="45"  Value7="46"  Value8="47"  Value9="48"  Value10="49"  Value11="50"  Value12="51"  Value13="52"   Value14="53"   Value15="54"   Value16="55"	Value17="56"   Value18="57"   Value19="58"   Value20="59"   Name="AG cost decrease" />
+		<!-- Water  -->                                                                                                                                                                                                                                                                                                                         
+		<Option Index="10" Element="2" Level="0" Rate="10" Value1="10"  Value2="11"  Value3="12"  Value4="13"  Value5="14"  Value6="15"  Value7="16"  Value8="17"  Value9="18"  Value10="19"  Value11="20"  Value12="21"  Value13="22"   Value14="23"   Value15="24"   Value16="25"	Value17="26"   Value18="27"   Value19="28"   Value20="29"   Name="Block rating increase" />
+		<Option Index="11" Element="2" Level="1" Rate="30" Value1="30"  Value2="33"  Value3="36"  Value4="39"  Value5="41"  Value6="44"  Value7="47"  Value8="51"  Value9="55"  Value10="60"  Value11="65"  Value12="71"  Value13="77"   Value14="84"   Value15="91"   Value16="99"	Value17="107"  Value18="116"  Value19="125"  Value20="135"  Name="Defense increase" />
+		<Option Index="12" Element="2" Level="2" Rate="50" Value1="100" Value2="150" Value3="250" Value4="300" Value5="350" Value6="400" Value7="450" Value8="500" Value9="550" Value10="600" Value11="650" Value12="700" Value13="750"  Value14="800"  Value15="850"  Value16="900"  Value17="950"  Value18="1000" Value19="1050" Value20="1100" Name="Shield protection increase" />
+		<Option Index="13" Element="2" Level="3" Rate="20" Value1="4"	  Value2="5"   Value3="6"	Value4="7"   Value5="8"   Value6="9"   Value7="10"  Value8="11"  Value9="12"  Value10="13"  Value11="14"  Value12="15"  Value13="16"   Value14="17"   Value15="18"   Value16="19"	Value17="20"   Value18="21"   Value19="22"   Value20="23"   Name="Damage reduction" />
+		<Option Index="14" Element="2" Level="4" Rate="40" Value1="5"	  Value2="6"   Value3="7"	Value4="8"   Value5="9"   Value6="10"  Value7="11"  Value8="12"  Value9="13"  Value10="14"  Value11="15"  Value12="16"  Value13="17"   Value14="18"   Value15="19"   Value16="20"	Value17="21"   Value18="22"   Value19="23"   Value20="24"   Name="Damage reflection" />
+		<!-- Ice -->                                                                                                                                                                                                                                                                                                                             
+		<Option Index="16" Element="3" Level="0" Rate="30" Value1="250" Value2="280" Value3="310" Value4="340" Value5="372" Value6="404" Value7="436" Value8="471" Value9="506" Value10="541" Value11="578" Value12="615" Value13="652"  Value14="689"  Value15="726"  Value16="766"  Value17="806"  Value18="846"  Value19="886"  Value20="926"  Name="Monster destruction for the Life increase" />
+		<Option Index="17" Element="3" Level="1" Rate="20" Value1="400" Value2="450" Value3="500" Value4="550" Value5="601" Value6="652" Value7="703" Value8="755" Value9="807" Value10="859" Value11="914" Value12="969" Value13="1024" Value14="1079" Value15="1134" Value16="1191" Value17="1248" Value18="1305" Value19="1362" Value20="1419" Name="Monster destruction for the Mana increase" />
+		<Option Index="18" Element="3" Level="2" Rate="10" Value1="37"  Value2="40"  Value3="45"  Value4="50"  Value5="57"  Value6="64"  Value7="71"  Value8="80"  Value9="89"  Value10="100" Value11="113" Value12="126" Value13="139"  Value14="152"  Value15="165"  Value16="180"  Value17="195"  Value18="210"  Value19="225"  Value20="240"  Name="Skill attack increase" />
+		<Option Index="19" Element="3" Level="3" Rate="50" Value1="25"  Value2="27"  Value3="30"  Value4="35"  Value5="42"  Value6="49"  Value7="56"  Value8="65"  Value9="74"  Value10="83"  Value11="94"  Value12="105" Value13="116"  Value14="127"  Value15="138"  Value16="153"  Value17="168"  Value18="186"  Value19="204"  Value20="222"  Name="Attack rating increase" />
+		<Option Index="20" Element="3" Level="4" Rate="30" Value1="30"  Value2="32"  Value3="34"  Value4="36"  Value5="40"  Value6="44"  Value7="49"  Value8="54"  Value9="60"  Value10="66"  Value11="73"  Value12="80"  Value13="88"   Value14="96"   Value15="105"  Value16="114"  Value17="124"  Value18="134"  Value19="145"  Value20="165"  Name="Item durability increase" />
+		<!-- Wind -->                                                                                                                                                                                                                                                                                                                          
+		<Option Index="21" Element="4" Level="0" Rate="40" Value1="8"	  Value2="10"  Value3="13"  Value4="16"  Value5="21"  Value6="26"  Value7="31"  Value8="38"  Value9="45"  Value10="52"  Value11="61"  Value12="70"  Value13="79"   Value14="88"   Value15="97"   Value16="110"  Value17="123"  Value18="136"  Value19="149"  Value20="162"  Name="Automatic Life recovery increase" />
+		<Option Index="22" Element="4" Level="1" Rate="30" Value1="100" Value2="115" Value3="130" Value4="145" Value5="165" Value6="185" Value7="205" Value8="235" Value9="265" Value10="295" Value11="335" Value12="375" Value13="415"  Value14="455"  Value15="495"  Value16="545"  Value17="595"  Value18="645"  Value19="695"  Value20="745"  Name="Maximum Life increase" />
+		<Option Index="23" Element="4" Level="2" Rate="40" Value1="150" Value2="165" Value3="180" Value4="195" Value5="215" Value6="235" Value7="255" Value8="285" Value9="315" Value10="345" Value11="385" Value12="425" Value13="465"  Value14="505"  Value15="545"  Value16="595"  Value17="645"  Value18="695"  Value19="745"  Value20="795"  Name="Maximum Mana increase" />
+		<Option Index="24" Element="4" Level="3" Rate="50" Value1="7"	  Value2="14"  Value3="21"  Value4="28"  Value5="37"  Value6="46"  Value7="55"  Value8="66"  Value9="77"  Value10="88"  Value11="101" Value12="114" Value13="127"  Value14="140"  Value15="153"  Value16="171"  Value17="189"  Value18="207"  Value19="225"  Value20="243"  Name="Automatic Mana recovery increase" />
+		<Option Index="25" Element="4" Level="4" Rate="40" Value1="70"  Value2="82"  Value3="95"  Value4="110" Value5="126" Value6="143" Value7="162" Value8="182" Value9="203" Value10="226" Value11="250" Value12="275" Value13="302"  Value14="330"  Value15="359"  Value16="390"  Value17="422"  Value18="455"  Value19="490"  Value20="526"  Name="Maximum AG increase" />
+		<Option Index="26" Element="4" Level="5" Rate="50" Value1="5"   Value2="7"   Value3="9"   Value4="11"  Value5="13"  Value6="15"  Value7="17"  Value8="19"  Value9="21"  Value10="23"  Value11="25"  Value12="27"  Value13="29"   Value14="31"   Value15="33"   Value16="35"	Value17="37"   Value18="39"   Value19="41"   Value20="43"   Name="AG value increase" />
+		<!-- Lightening -->                                                                                                                                                                                                                                                                                                             
+		<Option Index="29" Element="5" Level="0" Rate="20" Value1="15"  Value2="20"  Value3="25"  Value4="30"  Value5="36"  Value6="43"  Value7="51"  Value8="60"  Value9="70"  Value10="81"  Value11="94"  Value12="109" Value13="126"  Value14="145"  Value15="166"  Value16="189"  Value17="215"  Value18="244"  Value19="276"  Value20="311"  Name="Excellent damage increase" />
+		<Option Index="30" Element="5" Level="1" Rate="10" Value1="10"  Value2="11"  Value3="12"  Value4="13"  Value5="14"  Value6="15"  Value7="16"  Value8="17"  Value9="18"  Value10="19"  Value11="20"  Value12="21"  Value13="22"   Value14="23"   Value15="24"   Value16="25"	Value17="26"   Value18="27"   Value19="28"   Value20="29"   Name="Excellent damage rate increase" />
+		<Option Index="31" Element="5" Level="2" Rate="30" Value1="30"  Value2="32"  Value3="35"  Value4="40"  Value5="47"  Value6="56"  Value7="66"  Value8="77"  Value9="89"  Value10="102" Value11="117" Value12="134" Value13="153"  Value14="174"  Value15="197"  Value16="223"  Value17="252"  Value18="284"  Value19="319"  Value20="357"  Name="Critical damage increase" />
+		<Option Index="32" Element="5" Level="3" Rate="10" Value1="8"	  Value2="9"   Value3="10"  Value4="11"  Value5="12"  Value6="13"  Value7="14"  Value8="15"  Value9="16"  Value10="17"  Value11="18"  Value12="19"  Value13="20"   Value14="21"   Value15="22"   Value16="23"	Value17="24"   Value18="25"   Value19="26"   Value20="27"   Name="Critical damage rate increase" />
+		<!-- Earth -->                                                                                                                                                                                                                                                                                                                        
+		<Option Index="34" Element="6" Level="0" Rate="10" Value1="6"	  Value2="8"   Value3="9"   Value4="10"  Value5="11"  Value6="13"  Value7="15"  Value8="18"  Value9="20"  Value10="24"  Value11="27"  Value12="31"  Value13="35"   Value14="40"   Value15="44"   Value16="50"	Value17="55"   Value18="61"   Value19="67"   Value20="75"   Name="Strength increase" />
+		<Option Index="35" Element="6" Level="1" Rate="10" Value1="1"	  Value2="2"   Value3="3"   Value4="4"   Value5="5"	  Value6="7"   Value7="9"   Value8="12"  Value9="15"  Value10="18"  Value11="21"  Value12="25"  Value13="29"   Value14="34"   Value15="39"   Value16="44"	Value17="49"   Value18="55"   Value19="61"   Value20="68"   Name="Agility increase" />
+		<Option Index="36" Element="6" Level="2" Rate="10" Value1="30"  Value2="32"  Value3="34"  Value4="36"  Value5="38"  Value6="41"  Value7="44"  Value8="48"  Value9="52"  Value10="57"  Value11="62"  Value12="68"  Value13="74"   Value14="81"   Value15="88"   Value16="96"	Value17="104"  Value18="113"  Value19="122"  Value20="132"  Name="Health increase" />
+		<Option Index="37" Element="6" Level="3" Rate="10" Value1="10"  Value2="12"  Value3="13"  Value4="15"  Value5="17"  Value6="20"  Value7="23"  Value8="27"  Value9="31"  Value10="36"  Value11="41"  Value12="47"  Value13="53"   Value14="60"   Value15="67"   Value16="75"	Value17="83"   Value18="92"   Value19="101"  Value20="110"  Name="Energy increase" />
+	</SocketItemOptionSettings>
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<SocketBonusSettings> <!-- Old Index 1 -->
+	<!--    Index	   SubIndex	    MinItemSection      MaxItemSection      Value      ReqOptionType1     ReqOptionType2     ReqOptionType3     ReqOptionType4     ReqOptionType5     Name            -->
+	<Option Index="0"  SubIndex="0"	MinItemSection="0"  MaxItemSection="4"	Value="11" ReqOptionType1="1" ReqOptionType2="5" ReqOptionType3="3" ReqOptionType4="0" ReqOptionType5="0" Name="Increases Attack" />        
+	<Option Index="1"  SubIndex="1"	MinItemSection="0"  MaxItemSection="4"	Value="11" ReqOptionType1="5" ReqOptionType2="3" ReqOptionType3="1" ReqOptionType4="0" ReqOptionType5="0" Name="Increase Skill Damage" />
+	<Option Index="2"  SubIndex="2"	MinItemSection="5"  MaxItemSection="5"	Value="5"  ReqOptionType1="1" ReqOptionType2="5" ReqOptionType3="3" ReqOptionType4="0" ReqOptionType5="0" Name="Increases Attack Power and Magical Damage" />
+	<Option Index="3"  SubIndex="3"	MinItemSection="5"  MaxItemSection="5"	Value="11" ReqOptionType1="5" ReqOptionType2="3" ReqOptionType3="1" ReqOptionType4="0" ReqOptionType5="0" Name="Increase Skill Damage" />
+	<Option Index="4"  SubIndex="4"	MinItemSection="6"  MaxItemSection="12"	Value="24" ReqOptionType1="2" ReqOptionType2="6" ReqOptionType3="4" ReqOptionType4="0" ReqOptionType5="0" Name="Increases Defense" />
+	<Option Index="5"  SubIndex="5"	MinItemSection="6"  MaxItemSection="12"	Value="29" ReqOptionType1="6" ReqOptionType2="4" ReqOptionType3="2" ReqOptionType4="0" ReqOptionType5="0" Name="Increases MAX Life" />
+	<Option Index="6"  SubIndex="0"	MinItemSection="0"  MaxItemSection="4"	Value="22" ReqOptionType1="1" ReqOptionType2="5" ReqOptionType3="3" ReqOptionType4="0" ReqOptionType5="0" Name="Increases Attack" />
+	<Option Index="7"  SubIndex="1"	MinItemSection="0"  MaxItemSection="4"	Value="22" ReqOptionType1="5" ReqOptionType2="3" ReqOptionType3="1" ReqOptionType4="0" ReqOptionType5="0" Name="Increase Skill Damage" />
+	<Option Index="8"  SubIndex="2"	MinItemSection="5"  MaxItemSection="5"	Value="10" ReqOptionType1="1" ReqOptionType2="5" ReqOptionType3="3" ReqOptionType4="0" ReqOptionType5="0" Name="Increases Attack Power and Magical Damage" />
+	<Option Index="9"  SubIndex="3"	MinItemSection="5"  MaxItemSection="5"	Value="22" ReqOptionType1="5" ReqOptionType2="3" ReqOptionType3="1" ReqOptionType4="0" ReqOptionType5="0" Name="Increase Skill Damage" />
+	<Option Index="10" SubIndex="4"	MinItemSection="6"  MaxItemSection="12"	Value="27" ReqOptionType1="2" ReqOptionType2="6" ReqOptionType3="4" ReqOptionType4="0" ReqOptionType5="0" Name="Increases Defense" />
+	<Option Index="11" SubIndex="5"	MinItemSection="6"  MaxItemSection="12"	Value="31" ReqOptionType1="6" ReqOptionType2="4" ReqOptionType3="2" ReqOptionType4="0" ReqOptionType5="0" Name="Increases MAX Life" />
+	<Option Index="12" SubIndex="0"	MinItemSection="0"  MaxItemSection="4"	Value="33" ReqOptionType1="1" ReqOptionType2="5" ReqOptionType3="3" ReqOptionType4="0" ReqOptionType5="0" Name="Increases Attack" />
+	<Option Index="13" SubIndex="1"	MinItemSection="0"  MaxItemSection="4"	Value="33" ReqOptionType1="5" ReqOptionType2="3" ReqOptionType3="1" ReqOptionType4="0" ReqOptionType5="0" Name="Increase Skill Damage" />
+	<Option Index="14" SubIndex="2"	MinItemSection="5"  MaxItemSection="5"	Value="15" ReqOptionType1="1" ReqOptionType2="5" ReqOptionType3="3" ReqOptionType4="0" ReqOptionType5="0" Name="Increases Attack Power and Magical Damage" />
+	<Option Index="15" SubIndex="3"	MinItemSection="5"  MaxItemSection="5"	Value="33" ReqOptionType1="5" ReqOptionType2="3" ReqOptionType3="1" ReqOptionType4="0" ReqOptionType5="0" Name="Increase Skill Damage" />
+	<Option Index="16" SubIndex="4"	MinItemSection="6"  MaxItemSection="12"	Value="30" ReqOptionType1="2" ReqOptionType2="6" ReqOptionType3="4" ReqOptionType4="0" ReqOptionType5="0" Name="Increases Defense" />
+	<Option Index="17" SubIndex="5"	MinItemSection="6"  MaxItemSection="12"	Value="33" ReqOptionType1="6" ReqOptionType2="4" ReqOptionType3="2" ReqOptionType4="0" ReqOptionType5="0" Name="Increases MAX Life" />
+	<Option Index="18" SubIndex="0"	MinItemSection="0"  MaxItemSection="4"	Value="44" ReqOptionType1="1" ReqOptionType2="5" ReqOptionType3="3" ReqOptionType4="0" ReqOptionType5="0" Name="Increases Attack" />
+	<Option Index="19" SubIndex="1"	MinItemSection="0"  MaxItemSection="4"	Value="44" ReqOptionType1="5" ReqOptionType2="3" ReqOptionType3="1" ReqOptionType4="0" ReqOptionType5="0" Name="Increase Skill Damage" />
+	<Option Index="20" SubIndex="2"	MinItemSection="5"  MaxItemSection="5"	Value="20" ReqOptionType1="1" ReqOptionType2="5" ReqOptionType3="3" ReqOptionType4="0" ReqOptionType5="0" Name="Increases Attack Power and Magical Damage" />
+	<Option Index="21" SubIndex="3"	MinItemSection="5"  MaxItemSection="5"	Value="44" ReqOptionType1="5" ReqOptionType2="3" ReqOptionType3="1" ReqOptionType4="0" ReqOptionType5="0" Name="Increase Skill Damage" />
+	<Option Index="22" SubIndex="4"	MinItemSection="6"  MaxItemSection="12"	Value="33" ReqOptionType1="2" ReqOptionType2="6" ReqOptionType3="4" ReqOptionType4="0" ReqOptionType5="0" Name="Increases Defense" />
+	<Option Index="23" SubIndex="5"	MinItemSection="6"  MaxItemSection="12"	Value="35" ReqOptionType1="6" ReqOptionType2="4" ReqOptionType3="2" ReqOptionType4="0" ReqOptionType5="0" Name="Increases MAX Life" />
+	<Option Index="24" SubIndex="0"	MinItemSection="0"  MaxItemSection="4"	Value="55" ReqOptionType1="1" ReqOptionType2="5" ReqOptionType3="3" ReqOptionType4="0" ReqOptionType5="0" Name="Increases Attack" />
+	<Option Index="25" SubIndex="1"	MinItemSection="0"  MaxItemSection="4"	Value="55" ReqOptionType1="5" ReqOptionType2="3" ReqOptionType3="1" ReqOptionType4="0" ReqOptionType5="0" Name="Increase Skill Damage" />
+	<Option Index="26" SubIndex="2"	MinItemSection="5"  MaxItemSection="5"	Value="25" ReqOptionType1="1" ReqOptionType2="5" ReqOptionType3="3" ReqOptionType4="0" ReqOptionType5="0" Name="Increases Attack Power and Magical Damage" />
+	<Option Index="27" SubIndex="3"	MinItemSection="5"  MaxItemSection="5"	Value="55" ReqOptionType1="5" ReqOptionType2="3" ReqOptionType3="1" ReqOptionType4="0" ReqOptionType5="0" Name="Increase Skill Damage" />
+	<Option Index="28" SubIndex="4"	MinItemSection="6"  MaxItemSection="12"	Value="36" ReqOptionType1="2" ReqOptionType2="6" ReqOptionType3="4" ReqOptionType4="0" ReqOptionType5="0" Name="Increases Defense" />
+	<Option Index="29" SubIndex="5"	MinItemSection="6"  MaxItemSection="12"	Value="37" ReqOptionType1="6" ReqOptionType2="4" ReqOptionType3="2" ReqOptionType4="0" ReqOptionType5="0" Name="Increases MAX Life" />
+	<Option Index="30" SubIndex="4"	MinItemSection="20" MaxItemSection="20"	Value="24" ReqOptionType1="2" ReqOptionType2="6" ReqOptionType3="4" ReqOptionType4="0" ReqOptionType5="0" Name="Increases Defense" />	
+	<Option Index="31" SubIndex="5"	MinItemSection="20" MaxItemSection="20"	Value="29" ReqOptionType1="6" ReqOptionType2="4" ReqOptionType3="2" ReqOptionType4="0" ReqOptionType5="0" Name="Increases MAX Life" />
+	<Option Index="32" SubIndex="4"	MinItemSection="20" MaxItemSection="20"	Value="27" ReqOptionType1="2" ReqOptionType2="6" ReqOptionType3="4" ReqOptionType4="0" ReqOptionType5="0" Name="Increases Defense" />	
+	<Option Index="33" SubIndex="5"	MinItemSection="20" MaxItemSection="20"	Value="31" ReqOptionType1="6" ReqOptionType2="4" ReqOptionType3="2" ReqOptionType4="0" ReqOptionType5="0" Name="Increases MAX Life" />
+	<Option Index="34" SubIndex="4"	MinItemSection="20" MaxItemSection="20"	Value="30" ReqOptionType1="2" ReqOptionType2="6" ReqOptionType3="4" ReqOptionType4="0" ReqOptionType5="0" Name="Increases Defense" />	
+	<Option Index="35" SubIndex="5"	MinItemSection="20" MaxItemSection="20"	Value="33" ReqOptionType1="6" ReqOptionType2="4" ReqOptionType3="2" ReqOptionType4="0" ReqOptionType5="0" Name="Increases MAX Life" />
+	<Option Index="36" SubIndex="4"	MinItemSection="20" MaxItemSection="20"	Value="33" ReqOptionType1="2" ReqOptionType2="6" ReqOptionType3="4" ReqOptionType4="0" ReqOptionType5="0" Name="Increases Defense" />	
+	<Option Index="37" SubIndex="5"	MinItemSection="20" MaxItemSection="20"	Value="35" ReqOptionType1="6" ReqOptionType2="4" ReqOptionType3="2" ReqOptionType4="0" ReqOptionType5="0" Name="Increases MAX Life" />
+	<Option Index="38" SubIndex="4"	MinItemSection="20" MaxItemSection="20"	Value="36" ReqOptionType1="6" ReqOptionType2="4" ReqOptionType3="2" ReqOptionType4="0" ReqOptionType5="0" Name="Increases Defense" />	
+	<Option Index="39" SubIndex="5"	MinItemSection="20" MaxItemSection="20"	Value="37" ReqOptionType1="6" ReqOptionType2="4" ReqOptionType3="2" ReqOptionType4="0" ReqOptionType5="0" Name="Increases MAX Life" />
+</SocketBonusSettings>
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<SpecialOptionSettings>  <!-- Old Index 2 -->
+	<!--    Index     Value     ReqOptionTypeCount1     ReqOptionTypeCount2     ReqOptionTypeCount3     ReqOptionTypeCount4     ReqOptionTypeCount5     ReqOptionTypeCount6	    Name                             -->              
+	<Option Index="0" Value="3" ReqOptionTypeCount1="1" ReqOptionTypeCount2="1" ReqOptionTypeCount3="1" ReqOptionTypeCount4="1" ReqOptionTypeCount5="1" ReqOptionTypeCount6="1" Name="Double damage rate increase"/>
+	<Option Index="1" Value="1" ReqOptionTypeCount1="1" ReqOptionTypeCount2="3" ReqOptionTypeCount3="1" ReqOptionTypeCount4="3" ReqOptionTypeCount5="1" ReqOptionTypeCount6="2" Name="Opponent defensibility ignorance attack"/>
+</SpecialOptionSettings>
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+</SocketItemOption>

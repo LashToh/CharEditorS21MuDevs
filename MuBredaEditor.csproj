@@ -19,6 +19,8 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\Item.xml" LogicalName="Item.xml" />
+    <EmbeddedResource Include="Resources\SocketItemOption.xml" LogicalName="SocketItemOption.xml" />
+    <EmbeddedResource Include="Resources\SocketItemType.xml" LogicalName="SocketItemType.xml" />
   </ItemGroup>
 
 </Project>

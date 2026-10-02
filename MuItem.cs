@@ -147,8 +147,11 @@ public sealed class MuItem
 
     public static string[] ExcLabels(int cat) => cat is >= 6 and <= 11 ? ExcArmor : ExcWeapon;
 
-    public string Describe(ItemDef? def)
+    public byte[] Sockets => Raw[11..16];
+
+    public string Describe(ItemDef? def, SocketData? sockets = null)
     {
+        var socketItem = sockets?.IsSocketItem(Cat, Index) == true;
         var sb = new System.Text.StringBuilder();
         sb.AppendLine($"{def?.Name ?? "(item desconocido)"} +{Level}");
         sb.AppendLine($"Categoría {Cat}, índice {Index}  (ID MuDevs {Id})");
@@ -165,10 +168,27 @@ public sealed class MuItem
             sb.AppendLine("Excelente: " + string.Join(", ", Enumerable.Range(0, 6).Where(b => (Exc & (1 << b)) != 0).Select(b => labels[b])));
         }
         if (Ancient != 0) sb.AppendLine($"Ancient/Set: {Ancient}");
-        if (Harmony != 0) sb.AppendLine($"Harmony: tipo {Harmony >> 4}, nivel {Harmony & 0x0F}");
-        var sockets = Enumerable.Range(0, 5).Select(GetSocket).ToArray();
-        if (sockets.Any(s => s != 0xFF))
-            sb.AppendLine("Sockets: " + string.Join(" ", sockets.Select(s => s == 0xFF ? "--" : s == 0xFE ? "vacío" : s.ToString())));
+        if (Harmony != 0 && !socketItem) sb.AppendLine($"Harmony: tipo {Harmony >> 4}, nivel {Harmony & 0x0F}");
+        var raw = Sockets;
+        if (raw.Any(s => s != 0xFF))
+        {
+            if (sockets is null)
+                sb.AppendLine("Sockets: " + string.Join(" ", raw.Select(s => s == 0xFF ? "--" : s == 0xFE ? "vacío" : s.ToString())));
+            else
+            {
+                sb.AppendLine("Sockets:");
+                for (var i = 0; i < raw.Length; i++)
+                    if (raw[i] != 0xFF) sb.AppendLine($"  {i + 1}. {sockets.Describe(raw[i])}");
+            }
+        }
+        if (socketItem && Harmony != 0xFF)
+        {
+            var bonus = sockets!.StoredBonus(Cat, raw, Harmony);
+            if (bonus is not null)
+                sb.AppendLine($"  Bonus socket: {bonus.Name} +{bonus.Value} (nivel {sockets.TierOf(Cat, bonus)})");
+            else if (Harmony != 0)
+                sb.AppendLine($"  Bonus socket: valor {Harmony} (no corresponde a la combinación)");
+        }
         sb.AppendLine();
         sb.AppendLine("Hex:");
         sb.Append(Hex);

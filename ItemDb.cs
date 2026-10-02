@@ -21,6 +21,7 @@ public sealed class ItemDb
     public Dictionary<int, string> Sections { get; } = [];
     public Dictionary<int, ItemDef> Items { get; } = [];
     public string Source { get; private set; } = "";
+    public SocketData Sockets { get; private set; } = SocketData.Empty;
 
     public ItemDef? Get(int cat, int index) => Items.GetValueOrDefault(cat * 512 + index);
 
@@ -62,6 +63,7 @@ public sealed class ItemDb
                 db.Items[def.Id] = def;
             }
         }
+        db.Sockets = SocketData.Load(File.Exists(path) ? Path.GetDirectoryName(path) : null);
         return db;
     }
 

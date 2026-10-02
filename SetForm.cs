@@ -8,7 +8,7 @@ public sealed class SetForm : Form
     private readonly ItemDb _db;
     private readonly List<ArmorSet> _sets;
     private readonly TextBox _filter = new() { Width = 300, PlaceholderText = "Buscar set…" };
-    private readonly ListBox _list = new() { Width = 300, Height = 380 };
+    private readonly ListBox _list = new() { Width = 300, Height = 400 };
     private readonly NumericUpDown _level = new() { Minimum = 0, Maximum = 15, Value = 15, Width = 60 };
     private readonly CheckBox _luck = new() { Text = "Luck", AutoSize = true, Checked = true };
     private readonly ComboBox _opt = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 70 };
@@ -16,39 +16,45 @@ public sealed class SetForm : Form
     private readonly NumericUpDown _anc = new() { Minimum = 0, Maximum = 255, Width = 60 };
     private readonly RadioButton _equip = new() { Text = "Equiparlo (reemplaza casco, armadura, pantalón, guantes y botas)", AutoSize = true, Checked = true };
     private readonly RadioButton _bag = new() { Text = "Ponerlo en el inventario (primer lugar libre)", AutoSize = true };
-    private readonly Label _pieces = new() { AutoSize = true, ForeColor = Color.Gray };
+    private readonly Label _pieces = new() { AutoSize = true, ForeColor = Color.Gray, MaximumSize = new Size(400, 0) };
+    private readonly CheckBox _withSockets = new() { Text = "Con sockets (se aplican iguales a todas las piezas)", AutoSize = true };
+    private readonly SocketEditor _sockEd;
 
     public List<MuItem> Items { get; } = [];
     public bool ToEquipment => _equip.Checked;
 
-    private sealed record ArmorSet(int Index, string Name, ItemDef[] Pieces)
+    private sealed record ArmorSet(int Index, string Name, ItemDef[] Pieces, bool Socket)
     {
-        public override string ToString() => $"{Name}  ({Pieces.Length} piezas)";
+        public override string ToString() => $"{Name}  ({Pieces.Length} piezas){(Socket ? "  · socket" : "")}";
     }
 
     public SetForm(ItemDb db)
     {
         _db = db;
+        _sockEd = new SocketEditor(db.Sockets, 450);
         Text = "Dar set";
         StartPosition = FormStartPosition.CenterParent;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = MinimizeBox = false;
-        ClientSize = new Size(760, 470);
+        ClientSize = new Size(1230, 490);
         Font = new Font("Segoe UI", 9f);
 
         _sets = db.InSection(8)
-            .Select(a => new ArmorSet(a.Index, CleanName(a.Name),
-                Pieces.Select(p => db.Get(p.Cat, a.Index)).Where(d => d is not null).Cast<ItemDef>().ToArray()))
+            .Select(a =>
+            {
+                var pieces = Pieces.Select(p => db.Get(p.Cat, a.Index)).Where(d => d is not null).Cast<ItemDef>().ToArray();
+                return new ArmorSet(a.Index, CleanName(a.Name), pieces, pieces.Any(p => db.Sockets.IsSocketItem(p.Cat, p.Index)));
+            })
             .Where(s => s.Pieces.Length >= 3)
             .OrderBy(s => s.Name)
             .ToList();
         for (var i = 0; i <= 7; i++) _opt.Items.Add($"+{i * 4}");
         _opt.SelectedIndex = 7;
 
-        var left = new FlowLayoutPanel { FlowDirection = FlowDirection.TopDown, Location = new Point(10, 10), Size = new Size(310, 450), WrapContents = false };
+        var left = new FlowLayoutPanel { FlowDirection = FlowDirection.TopDown, Location = new Point(10, 10), Size = new Size(310, 470), WrapContents = false };
         left.Controls.AddRange([_filter, _list]);
 
-        var right = new FlowLayoutPanel { FlowDirection = FlowDirection.TopDown, Location = new Point(335, 10), Size = new Size(415, 400), WrapContents = false };
+        var right = new FlowLayoutPanel { FlowDirection = FlowDirection.TopDown, Location = new Point(335, 10), Size = new Size(415, 420), WrapContents = false };
         right.Controls.AddRange(
         [
             Line("Nivel +", _level),
@@ -62,20 +68,32 @@ public sealed class SetForm : Form
             _pieces,
         ]);
 
-        var ok = new Button { Text = "Dar set", DialogResult = DialogResult.OK, Location = new Point(560, 430), Width = 90 };
-        var cancel = new Button { Text = "Cancelar", DialogResult = DialogResult.Cancel, Location = new Point(660, 430), Width = 90 };
+        var sockets = new FlowLayoutPanel { FlowDirection = FlowDirection.TopDown, Location = new Point(765, 10), Size = new Size(460, 420), WrapContents = false };
+        sockets.Controls.AddRange([_withSockets, _sockEd]);
+        _sockEd.Enabled = false;
+
+        var ok = new Button { Text = "Dar set", DialogResult = DialogResult.OK, Location = new Point(1030, 450), Width = 90 };
+        var cancel = new Button { Text = "Cancelar", DialogResult = DialogResult.Cancel, Location = new Point(1130, 450), Width = 90 };
         AcceptButton = ok;
         CancelButton = cancel;
-        Controls.AddRange([left, right, ok, cancel]);
+        Controls.AddRange([left, right, sockets, ok, cancel]);
 
+        _sockEd.Reset(8, false);
+        _withSockets.CheckedChanged += (_, _) => _sockEd.Enabled = _withSockets.Checked;
         _filter.TextChanged += (_, _) => Fill();
-        _list.SelectedIndexChanged += (_, _) =>
-            _pieces.Text = _list.SelectedItem is ArmorSet s ? "Piezas: " + string.Join(", ", s.Pieces.Select(p => p.Name)) : "";
+        _list.SelectedIndexChanged += (_, _) => SetPicked();
         ok.Click += (_, _) =>
         {
             if (_list.SelectedItem is not ArmorSet s)
             {
                 MessageBox.Show("Elegí un set de la lista.");
+                DialogResult = DialogResult.None;
+                return;
+            }
+            if (_withSockets.Checked && !s.Socket && !_sockEd.ForceChecked)
+            {
+                MessageBox.Show("Ese set no acepta sockets según SocketItemType.xml. Elegí un set marcado \"· socket\" " +
+                                "o tildá \"Editar igual\" en la sección de sockets.", "Sockets");
                 DialogResult = DialogResult.None;
                 return;
             }
@@ -89,6 +107,8 @@ public sealed class SetForm : Form
                 it.Option = _opt.SelectedIndex;
                 it.Exc = _exc.Checked ? 0x3F : 0;
                 it.Ancient = (int)_anc.Value;
+                if (_withSockets.Checked && (_db.Sockets.IsSocketItem(d.Cat, d.Index) || _sockEd.ForceChecked))
+                    _sockEd.ApplyTo(it, force: true);
                 Items.Add(it);
             }
         };
@@ -96,6 +116,18 @@ public sealed class SetForm : Form
     }
 
     public static int EquipSlotFor(int cat) => Pieces.First(p => p.Cat == cat).EquipSlot;
+
+    private void SetPicked()
+    {
+        if (_list.SelectedItem is not ArmorSet s)
+        {
+            _pieces.Text = "";
+            return;
+        }
+        _pieces.Text = "Piezas: " + string.Join(", ", s.Pieces.Select(p =>
+            p.Name + (_db.Sockets.IsSocketItem(p.Cat, p.Index) ? " (socket)" : "")));
+        _sockEd.Retarget(8, s.Socket);
+    }
 
     private static string CleanName(string n)
     {
