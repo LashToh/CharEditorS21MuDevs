@@ -20,7 +20,8 @@ public sealed class ItemEditForm : Form
     private readonly ComboBox _opt = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 80 };
     private readonly CheckBox[] _exc = new CheckBox[6];
     private readonly CheckBox _excAll = new() { Text = "Full excelente", AutoSize = true };
-    private readonly NumericUpDown _anc = Num(0, 255);
+    private readonly ComboBox _anc = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 250, DropDownWidth = 420 };
+    private readonly ComboBox _stam = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 130 };
     private readonly CheckBox _o380 = new() { Text = "Opción 380", AutoSize = true };
     private readonly NumericUpDown _harm = Num(0, 255);
     private readonly Label _harmLabel = new() { Text = "Harmony", AutoSize = true, Padding = new Padding(8, 4, 0, 0) };
@@ -48,6 +49,9 @@ public sealed class ItemEditForm : Form
         foreach (var (cat, name) in db.Sections.Where(s => s.Key <= 15).OrderBy(s => s.Key))
             _cat.Items.Add(new CatItem(cat, name));
         for (var i = 0; i <= 7; i++) _opt.Items.Add($"+{i * 4}");
+        _stam.Items.Add(new StamItem(0, "Sin stamina"));
+        _stam.Items.Add(new StamItem(SetData.Stamina5, "+5 stamina"));
+        _stam.Items.Add(new StamItem(SetData.Stamina10, "+10 stamina"));
 
         _list.Height = 580;
         var left = new FlowLayoutPanel { FlowDirection = FlowDirection.TopDown, Location = new Point(10, 10), Size = new Size(270, 680), WrapContents = false };
@@ -77,7 +81,7 @@ public sealed class ItemEditForm : Form
             excBox.Controls.Add(_exc[i]);
         }
         Row(right, "Excelente", excBox);
-        Row(right, "Ancient / Set", Flow(_anc, new Label { Text = "5/6 = set A/B +5 · 9/10 = set A/B +10", AutoSize = true, ForeColor = Color.Gray, Padding = new Padding(4, 4, 0, 0) }));
+        Row(right, "Ancient", Flow(_anc, _stam));
         Row(right, "Otras", Flow(_o380, _harmLabel, _harm));
         Row(right, "Sockets", _sockEd);
         Row(right, "Serial", _serial);
@@ -103,11 +107,13 @@ public sealed class ItemEditForm : Form
             if (_loading) return;
             foreach (var c in _exc) c.Checked = _excAll.Checked;
         };
-        foreach (var c in new Control[] { _level, _dur, _anc, _harm, _serial })
-            ((NumericUpDown)c).ValueChanged += (_, _) => FromControls();
+        foreach (var c in new NumericUpDown[] { _level, _dur, _harm, _serial })
+            c.ValueChanged += (_, _) => FromControls();
         foreach (var c in new[] { _skill, _luck, _o380 }.Concat(_exc))
             c.CheckedChanged += (_, _) => FromControls();
         _opt.SelectedIndexChanged += (_, _) => FromControls();
+        _anc.SelectedIndexChanged += (_, _) => { if (!_loading) OnAncientPick(); };
+        _stam.SelectedIndexChanged += (_, _) => FromControls();
         _sockEd.Changed += (_, _) => FromControls();
 
         ok.Click += (_, _) =>
@@ -200,7 +206,7 @@ public sealed class ItemEditForm : Form
             _exc[i].Checked = (_item.Exc & (1 << i)) != 0;
         }
         _excAll.Checked = _item.Exc == 0x3F;
-        _anc.Value = _item.Ancient;
+        FillAncient();
         _o380.Checked = _item.Opt380;
         _harm.Value = _item.Harmony;
         var socketItem = _db.Sockets.IsSocketItem(_item.Cat, _item.Index);
@@ -223,12 +229,68 @@ public sealed class ItemEditForm : Form
         var exc = 0;
         for (var i = 0; i < 6; i++) if (_exc[i].Checked) exc |= 1 << i;
         _item.Exc = exc;
-        _item.Ancient = (int)_anc.Value;
+        if (_anc.SelectedItem is AncItem anc)
+        {
+            if (anc.Raw is int raw) _item.Ancient = raw;
+            else if (anc.Tier == 0) _item.Ancient = 0;
+            else _item.Ancient = anc.Tier | (((StamItem?)_stam.SelectedItem)?.Bits ?? 0);
+        }
         _item.Opt380 = _o380.Checked;
         if (!_db.Sockets.IsSocketItem(_item.Cat, _item.Index)) _item.Harmony = (int)_harm.Value;
         _sockEd.ApplyTo(_item);
         _item.Serial = (uint)_serial.Value;
         _hex.Text = _item.Hex;
+    }
+
+    private void OnAncientPick()
+    {
+        _stam.Enabled = _anc.SelectedItem is AncItem a && a.Raw is null && a.Tier > 0;
+        FromControls();
+    }
+
+    private void FillAncient()
+    {
+        var ancient = _item.Ancient;
+        var tier = ancient & 0x03;
+        var stam = ancient & 0x0C;
+        var extra = ancient & 0xF0;
+        var versions = _db.Sets.VersionsOf(_item.Id).ToList();
+        var tierOk = tier == 0 || versions.Any(v => v.Tier == tier);
+        var stamOk = stam is 0 or SetData.Stamina5 or SetData.Stamina10;
+        var raw = ancient != 0 && (!tierOk || !stamOk || extra != 0);
+
+        _anc.Items.Clear();
+        _anc.Items.Add(new AncItem(0, "Sin ancient"));
+        foreach (var (opt, t) in versions)
+            _anc.Items.Add(new AncItem(t, $"{opt.Name} (tier {t})"));
+        if (raw)
+            _anc.Items.Add(new AncItem(0, $"Valor crudo {ancient} (se conserva)", ancient));
+
+        var ancIndex = 0;
+        for (var i = 0; i < _anc.Items.Count; i++)
+        {
+            var a = (AncItem)_anc.Items[i]!;
+            if (raw && a.Raw == ancient) { ancIndex = i; break; }
+            if (!raw && a.Raw is null && a.Tier == tier) { ancIndex = i; break; }
+        }
+        _anc.SelectedIndex = ancIndex;
+
+        var want = !raw && tier > 0 && stamOk ? stam : 0;
+        var stamIndex = 0;
+        for (var i = 0; i < _stam.Items.Count; i++)
+            if (((StamItem)_stam.Items[i]!).Bits == want) { stamIndex = i; break; }
+        _stam.SelectedIndex = stamIndex;
+        _stam.Enabled = !raw && tier > 0;
+    }
+
+    private sealed record AncItem(int Tier, string Label, int? Raw = null)
+    {
+        public override string ToString() => Label;
+    }
+
+    private sealed record StamItem(int Bits, string Label)
+    {
+        public override string ToString() => Label;
     }
 
     private void ApplyHex()
