@@ -12,6 +12,11 @@ public sealed class ItemDef
     public int Width { get; init; } = 1;
     public int Height { get; init; } = 1;
     public int Durability { get; init; }
+    /// <summary>Equipment slot from Item.xml: 0/1 hands, 2-6 armor, 9 pendant, 10/11 rings, -1 none.</summary>
+    public int Slot { get; init; } = -1;
+    public int Skill { get; init; }
+    public bool TwoHand { get; init; }
+    public int Level { get; init; }
     public int Id => Cat * 512 + Index;
     public override string ToString() => $"{Index,4}  {Name}";
 }
@@ -22,6 +27,7 @@ public sealed class ItemDb
     public Dictionary<int, ItemDef> Items { get; } = [];
     public string Source { get; private set; } = "";
     public SocketData Sockets { get; private set; } = SocketData.Empty;
+    public SetData Sets { get; private set; } = SetData.Empty;
 
     public ItemDef? Get(int cat, int index) => Items.GetValueOrDefault(cat * 512 + index);
 
@@ -59,11 +65,17 @@ public sealed class ItemDb
                     Width = Math.Max(1, Int(it, "Width")),
                     Height = Math.Max(1, Int(it, "Height")),
                     Durability = Int(it, "Durability"),
+                    Slot = it.Attribute("Slot") is null ? -1 : Int(it, "Slot"),
+                    Skill = Int(it, "Skill"),
+                    TwoHand = Int(it, "TwoHand") == 1,
+                    Level = Int(it, "Level"),
                 };
                 db.Items[def.Id] = def;
             }
         }
-        db.Sockets = SocketData.Load(File.Exists(path) ? Path.GetDirectoryName(path) : null);
+        var dir = File.Exists(path) ? Path.GetDirectoryName(path) : null;
+        db.Sockets = SocketData.Load(dir);
+        db.Sets = SetData.Load(dir);
         return db;
     }
 

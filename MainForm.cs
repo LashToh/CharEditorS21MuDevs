@@ -29,6 +29,7 @@ public sealed class MainForm : Form
     private readonly Label _accTitle = new() { AutoSize = true, Font = new Font("Segoe UI", 12f, FontStyle.Bold) };
     private readonly Label _chrTitle = new() { AutoSize = true, Font = new Font("Segoe UI", 12f, FontStyle.Bold) };
     private readonly Label _classLabel = new() { AutoSize = true, ForeColor = Color.Gray, Padding = new Padding(6, 6, 0, 0) };
+    private bool _syncClass;
 
     public MainForm(AppConfig cfg)
     {
@@ -64,7 +65,7 @@ public sealed class MainForm : Form
         searchBar.Controls.Add(btnSearch, 1, 0);
         _results.Columns.Add("Personaje", 95);
         _results.Columns.Add("Cuenta", 85);
-        _results.Columns.Add("Clase", 110);
+        _results.Columns.Add("Clase", 175);
         _results.Columns.Add("Nivel", 45);
         _results.Columns.Add("Resets", 50);
         split.Panel1.Controls.Add(_results);
@@ -293,26 +294,43 @@ public sealed class MainForm : Form
     private TabPage BuildCharacterTab()
     {
         var page = new TabPage("Personaje") { Padding = new Padding(12), AutoScroll = true };
-        var race = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 180 };
+        var race = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 150 };
         race.Items.AddRange(GameData.Races.Select((n, i) => (object)$"{i} - {n}").ToArray());
-        var evo = Num(15);
-        evo.Width = 60;
+        var evo = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 300, DropDownWidth = 360 };
         var classBox = new FlowLayoutPanel { AutoSize = true, WrapContents = false };
-        classBox.Controls.AddRange([race, new Label { Text = "Evo", AutoSize = true, Padding = new Padding(6, 6, 0, 0) }, evo, _classLabel]);
+        classBox.Controls.AddRange(
+        [
+            new Label { Text = "Clase", AutoSize = true, Padding = new Padding(0, 6, 6, 0) },
+            race,
+            new Label { Text = "Evolución", AutoSize = true, Padding = new Padding(8, 6, 4, 0) },
+            evo, _classLabel,
+        ]);
         _chr["race"] = race;
         _chr["evo"] = evo;
-        void UpdateClass() => _classLabel.Text = $"Class = {Math.Max(0, race.SelectedIndex) * 16 + (int)evo.Value}";
-        race.SelectedIndexChanged += (_, _) => UpdateClass();
-        evo.ValueChanged += (_, _) => UpdateClass();
+        race.SelectedIndexChanged += (_, _) =>
+        {
+            if (_syncClass) return;
+            var prev = evo.SelectedItem as EvoItem;
+            var raceIx = Math.Max(0, race.SelectedIndex);
+            int bits;
+            if (prev?.Stage is int stage)
+            {
+                var step = GameData.Evolutions(raceIx).FirstOrDefault(s => s.Stage == stage);
+                bits = step.Stage == stage ? step.Code : 0;
+            }
+            else bits = prev?.Bits ?? 0;
+            SelectEvolution(bits);
+        };
+        evo.SelectedIndexChanged += (_, _) => { if (!_syncClass) UpdateClassLabel(); };
+        race.SelectedIndex = 0;
 
         var map = new ComboBox { DropDownStyle = ComboBoxStyle.DropDown, Width = 180 };
         map.Items.AddRange(GameData.Maps.OrderBy(m => m.Key).Select(m => (object)$"{m.Key} - {m.Value}").ToArray());
 
         var t = FieldTable();
         var classRow = t.RowCount++;
-        t.Controls.Add(new Label { Text = "Clase", AutoSize = true, Padding = new Padding(0, 6, 0, 0) }, 0, classRow);
-        t.Controls.Add(classBox, 1, classRow);
-        t.SetColumnSpan(classBox, 3);
+        t.Controls.Add(classBox, 0, classRow);
+        t.SetColumnSpan(classBox, 4);
 
         Field(t, _chr, "level", "Nivel", Num(2000), 0);
         Field(t, _chr, "points", "Puntos libres", Num(), 1);
@@ -389,8 +407,10 @@ public sealed class MainForm : Form
 
         var cls = I(r, "Class");
         _chrTitle.Text = $"{_character}  ·  {GameData.ClassName(cls)}";
-        ((ComboBox)_chr["race"]).SelectedIndex = Math.Min(cls >> 4, GameData.Races.Length - 1);
-        SetNum(_chr, "evo", cls & 0x0F);
+        _syncClass = true;
+        ((ComboBox)_chr["race"]).SelectedIndex = Math.Clamp(cls >> 4, 0, GameData.Races.Length - 1);
+        _syncClass = false;
+        SelectEvolution(cls & 0x0F);
         SetNum(_chr, "level", I(r, "cLevel"));
         SetNum(_chr, "points", I(r, "LevelUpPoint"));
         SetNum(_chr, "str", I(r, "Strength"));
@@ -426,7 +446,8 @@ public sealed class MainForm : Form
             MessageBox.Show("Mapa inválido: escribí el número de mapa.");
             return;
         }
-        var cls = Math.Max(0, ((ComboBox)_chr["race"]).SelectedIndex) * 16 + (int)V(_chr, "evo");
+        var cls = Math.Max(0, ((ComboBox)_chr["race"]).SelectedIndex) * 16 +
+                  (((ComboBox)_chr["evo"]).SelectedItem is EvoItem evo ? evo.Bits : 0);
         _db.Transaction(exec =>
         {
             exec(@"UPDATE Character SET Class=@p0, cLevel=@p1, LevelUpPoint=@p2, Strength=@p3, Dexterity=@p4, Vitality=@p5,
@@ -468,10 +489,11 @@ public sealed class MainForm : Form
         using var f = new SetForm(_items);
         if (f.ShowDialog(this) != DialogResult.OK || f.Items.Count == 0) return;
         var placed = 0;
-        foreach (var it in f.Items)
+        foreach (var (it, equipSlot) in f.Items)
         {
-            var slot = f.ToEquipment ? SetForm.EquipSlotFor(it.Cat) : _inv.FindFree(it);
-            if (slot >= 0 && _inv.TryPlace(slot, it, ignoreSlot: f.ToEquipment ? slot : -1, quiet: true)) placed++;
+            var equip = f.ToEquipment && equipSlot >= 0;
+            var slot = equip ? equipSlot : _inv.FindFree(it);
+            if (slot >= 0 && _inv.TryPlace(slot, it, ignoreSlot: equip ? slot : -1, quiet: true)) placed++;
         }
         var msg = $"Set agregado: {placed} de {f.Items.Count} piezas.";
         if (placed < f.Items.Count) msg += " No hubo lugar para el resto.";
@@ -527,5 +549,38 @@ public sealed class MainForm : Form
         _db.Exec("UPDATE warehouse SET Items=@p0, Money=@p1 WHERE AccountID=@p2", _ware.Box.Data, (int)_wareMoney.Value, _account);
         _ware.MarkSaved();
         UpdateStatus($"Baúl de {_account} guardado (backup en la carpeta Backups).");
+    }
+
+    private void SelectEvolution(int bits)
+    {
+        var race = Math.Max(0, ((ComboBox)_chr["race"]).SelectedIndex);
+        var evo = (ComboBox)_chr["evo"];
+        var steps = GameData.Evolutions(race);
+        _syncClass = true;
+        evo.BeginUpdate();
+        evo.Items.Clear();
+        foreach (var s in steps)
+            evo.Items.Add(new EvoItem(s.Code, s.Stage, s.Label));
+        if (!steps.Any(s => s.Code == bits))
+            evo.Items.Add(new EvoItem(bits, null, $"código {bits} (desconocido)"));
+        for (var i = 0; i < evo.Items.Count; i++)
+            if (((EvoItem)evo.Items[i]!).Bits == bits) { evo.SelectedIndex = i; break; }
+        evo.EndUpdate();
+        _syncClass = false;
+        UpdateClassLabel();
+    }
+
+    private void UpdateClassLabel()
+    {
+        var race = Math.Max(0, ((ComboBox)_chr["race"]).SelectedIndex);
+        var bits = ((ComboBox)_chr["evo"]).SelectedItem is EvoItem e ? e.Bits : 0;
+        _classLabel.Text = $"Class = {race * 16 + bits}";
+    }
+
+    private sealed class EvoItem(int bits, int? stage, string text)
+    {
+        public int Bits { get; } = bits;
+        public int? Stage { get; } = stage;
+        public override string ToString() => text;
     }
 }
