@@ -7,7 +7,7 @@ public sealed class InventoryPage : UserControl
     private readonly ItemImages _images;
     private readonly InvArea[] _areas;
     private readonly List<SlotPanelBase> _panels = [];
-    private readonly TextBox _details;
+    private readonly ItemPreview _details;
     private readonly ContextMenuStrip _menu = new();
     private int _menuSlot = -1;
     private bool _menuEmpty;
@@ -41,12 +41,8 @@ public sealed class InventoryPage : UserControl
         foreach (var a in areas)
             AddPanel(flow, a.Name, new GridPanel(a, db, images, () => Box));
 
-        _details = new TextBox
-        {
-            Dock = DockStyle.Right, Width = 300, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical,
-            Font = new Font("Consolas", 9f), BackColor = Color.FromArgb(28, 26, 24), ForeColor = Color.Gainsboro,
-            Text = "Click en un item para ver el detalle.\r\nDoble click para editar.\r\nClick derecho para más opciones.",
-        };
+        _details = new ItemPreview(images) { Dock = DockStyle.Right, Width = 300 };
+        _details.ShowSlot(-1, null, db);
 
         Controls.Add(flow);
         Controls.Add(_details);
@@ -118,9 +114,7 @@ public sealed class InventoryPage : UserControl
         foreach (var p in _panels) p.SelectedSlot = slot;
         RefreshAll();
         var it = slot >= 0 ? Box?.Get(slot) : null;
-        _details.Text = it is null
-            ? (slot >= 0 ? $"Casillero {slot} vacío." : "")
-            : $"Casillero {slot}\r\n\r\n" + it.Describe(_db.Get(it.Cat, it.Index), _db.Sockets).Replace("\n", "\r\n").Replace("\r\r", "\r");
+        _details.ShowSlot(slot, it, _db);
     }
 
     private InvArea? AreaOf(int slot) => _areas.FirstOrDefault(a => a.Contains(slot));

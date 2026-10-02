@@ -149,11 +149,14 @@ public sealed class MuItem
 
     public byte[] Sockets => Raw[11..16];
 
-    public string Describe(ItemDef? def, SocketData? sockets = null)
+    public string Describe(ItemDef? def, SocketData? sockets = null, SetData? sets = null)
     {
         var socketItem = sockets?.IsSocketItem(Cat, Index) == true;
+        var set = sets?.OptionOf(this);
         var sb = new System.Text.StringBuilder();
-        sb.AppendLine($"{def?.Name ?? "(item desconocido)"} +{Level}");
+        var name = def?.Name ?? "(item desconocido)";
+        if (set is not null) name = $"{set.Name} {name}";
+        sb.AppendLine($"{name} +{Level}");
         sb.AppendLine($"Categoría {Cat}, índice {Index}  (ID MuDevs {Id})");
         sb.AppendLine($"Durabilidad {Durability}   Serial {Serial}");
         var opts = new List<string>();
@@ -167,7 +170,12 @@ public sealed class MuItem
             var labels = ExcLabels(Cat);
             sb.AppendLine("Excelente: " + string.Join(", ", Enumerable.Range(0, 6).Where(b => (Exc & (1 << b)) != 0).Select(b => labels[b])));
         }
-        if (Ancient != 0) sb.AppendLine($"Ancient/Set: {Ancient}");
+        if (set is not null)
+        {
+            var stam = SetData.StaminaOf(Ancient);
+            if (stam > 0) sb.AppendLine($"Stamina +{stam}");
+        }
+        else if (Ancient != 0) sb.AppendLine($"Ancient/Set: {Ancient}");
         if (Harmony != 0 && !socketItem) sb.AppendLine($"Harmony: tipo {Harmony >> 4}, nivel {Harmony & 0x0F}");
         var raw = Sockets;
         if (raw.Any(s => s != 0xFF))
